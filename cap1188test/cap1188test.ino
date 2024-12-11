@@ -52,9 +52,9 @@ void setup()
 
   // Write sensitivity from 0x7f(1x) to 0x2f(32x, default)
   // Referenced from https://forums.adafruit.com/viewtopic.php?t=55900
-  // cap.writeRegister(CAP1188_SENSITIVITY, 0x6F); // 4x  sensitivity
-  // Serial.print("Sensitivity: 0x");
-  // Serial.println(cap.readRegister(CAP1188_SENSITIVITY), HEX);
+  cap.writeRegister(CAP1188_SENSITIVITY, 0x6F); // 4x  sensitivity
+  Serial.print("Sensitivity: 0x");
+  Serial.println(cap.readRegister(CAP1188_SENSITIVITY), HEX);
 
   // Init all sensor readings to 0
   for (int p = 0; p < NumCapPins; p++)
