@@ -36,7 +36,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 8.0, 158.0, 191.0, 22.0 ],
-					"presentation_linecount" : 3,
 					"text" : "open rain-on-leaves.wav, 1, loop 1"
 				}
 
@@ -210,7 +209,7 @@
 
 							}
  ],
-						"originid" : "pat-18"
+						"originid" : "pat-6"
 					}
 ,
 					"patching_rect" : [ 86.0, 281.0, 113.0, 22.0 ],
@@ -419,7 +418,7 @@
 
 							}
  ],
-						"originid" : "pat-6"
+						"originid" : "pat-10"
 					}
 ,
 					"patching_rect" : [ 53.043476521968842, 246.956513643264771, 113.0, 22.0 ],
@@ -600,7 +599,7 @@
 
 							}
  ],
-						"originid" : "pat-10"
+						"originid" : "pat-12"
 					}
 ,
 					"patching_rect" : [ 20.869564533233643, 217.391297221183777, 113.0, 22.0 ],
@@ -970,7 +969,7 @@
 
 							}
  ],
-						"originid" : "pat-12"
+						"originid" : "pat-14"
 					}
 ,
 					"patching_rect" : [ 195.743812143802643, 80.0, 189.256187856197357, 22.0 ],
