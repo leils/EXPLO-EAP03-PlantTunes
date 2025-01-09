@@ -8,16 +8,13 @@
 #include <Wire.h>
 #include <SPI.h>
 #include "Adafruit_CAP1188.h"
+#include <FastLED.h>
 
-#define PIXEL_PIN  6 
-#define NUMPIXELS 12 
+#define NUM_LEDS 1
+#define DATA_PIN 5
+#define CLOCK_PIN 6
 
-// When setting up the NeoPixel library, we tell it how many pixels,
-// and which pin to use to send signals. Note that for older NeoPixel
-// strips you might need to change the third parameter -- see the
-// strandtest example for more information on possible values.
-Adafruit_NeoPixel pixels(NUMPIXELS, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
-
+CRGB leds[NUM_LEDS];
 
 // Reset Pin is used for I2C or SPI
 #define CAP1188_RESET 9
@@ -34,20 +31,23 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 // Or...Use I2C, with reset pin
 Adafruit_CAP1188 cap = Adafruit_CAP1188(CAP1188_RESET);
 
-const int NumCapPins = 4;
+const int NumCapPins = 8;
 
 // Storage for last 5 readings of CAP pin 0
 const int bufferSize = 5;                   // Size of the buffer
 int sensorReadings[NumCapPins][bufferSize]; // Array to store the last 5 readings of each pin
 int stableReadings[NumCapPins] = { 0 };
 
+#define SWITCH_PIN 2
+int lastSwitchRead = 0;
+
 void setup()
 {
   Serial.begin(9600);
-  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
-  pixels.clear();
-  pixels.show();
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(SWITCH_PIN, INPUT_PULLUP);
 
+  FastLED.addLeds<P9813, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);  // BGR ordering is typical
 
   int cnt = 1000; // Will wait for up to ~1 second for Serial to connect.
   while (!Serial && cnt--)
@@ -66,7 +66,7 @@ void setup()
 
   // Write sensitivity from 0x7f(1x) to 0x2f(32x, default)
   // Referenced from https://forums.adafruit.com/viewtopic.php?t=55900
-  cap.writeRegister(CAP1188_SENSITIVITY, 0x6F); // 4x  sensitivity
+  cap.writeRegister(CAP1188_SENSITIVITY, 0x3F); 
   Serial.print("Sensitivity: 0x");
   Serial.println(cap.readRegister(CAP1188_SENSITIVITY), HEX);
 
@@ -89,8 +89,12 @@ void loop()
     Serial.print("Sensitivity: 0x");
     Serial.println(cap.readRegister(CAP1188_SENSITIVITY), HEX);
   }
+
   addReadings(touched); // Add the new reading to the buffer
   updateStableState();  // Debounce readings
+  handleButton();
+
+
 
   // Report current stable state via Serial
   for (int i=0; i<NumCapPins; i++) {
@@ -98,7 +102,7 @@ void loop()
   }
   Serial.println();
 
-  handleLight();
+  // handleLight();
 
   delay(50);
 }
@@ -135,16 +139,22 @@ void updateStableState() {
 }
 
 void handleLight() {
-  // Make light responsive to pin 0 
+  // Make light responsive to pin 1 
 
-  if (stableReadings[0]) {
-    for (int i = 0; i < NUMPIXELS; i++) {
-      pixels.setPixelColor(i, pixels.Color(100,100,100));
-    }
+  if (stableReadings[1]) {
+    leds[0] = CRGB::Green;
   } else {
-    for (int i = 0; i < NUMPIXELS; i++) {
-      pixels.setPixelColor(i, pixels.Color(0,0,0));
-    }
+    leds[0] = CRGB::Black;
   }
-  pixels.show();
+  FastLED.show();
+}
+
+void handleButton() {
+  byte switchState = digitalRead(SWITCH_PIN);  //read the state of the input pin (HIGH or LOW)
+  if (switchState == LOW && lastSwitchRead == HIGH) {
+    cap.writeRegister(CAP1188_SENSITIVITY, 0x3F);
+  } else if (switchState == HIGH && lastSwitchRead == LOW) {
+    cap.writeRegister(CAP1188_SENSITIVITY, 0x6F);
+  }
+  lastSwitchRead = switchState;
 }

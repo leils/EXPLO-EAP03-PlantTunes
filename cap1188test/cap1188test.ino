@@ -24,7 +24,7 @@
 // Or...Use I2C, with reset pin
 Adafruit_CAP1188 cap = Adafruit_CAP1188(CAP1188_RESET);
 
-const int NumCapPins = 4;
+const int NumCapPins = 8;
 
 // Storage for last 5 readings of CAP pin 0
 const int bufferSize = 5;                   // Size of the buffer
