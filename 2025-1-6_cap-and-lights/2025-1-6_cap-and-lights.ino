@@ -102,7 +102,7 @@ void loop()
   }
   Serial.println();
 
-  // handleLight();
+  handleLight();
 
   delay(50);
 }
@@ -139,8 +139,6 @@ void updateStableState() {
 }
 
 void handleLight() {
-  // Make light responsive to pin 1 
-
   if (stableReadings[1]) {
     leds[0] = CRGB::Green;
   } else {
