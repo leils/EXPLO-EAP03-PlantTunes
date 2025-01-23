@@ -1,9 +1,17 @@
+#include <FastLED.h> 
 
 #define CAP_POWER_PIN_1 10
 #define CAP_OUT_PIN_1 11
 #define CAP_POWER_PIN_2 8
 #define CAP_OUT_PIN_2 9
 #define BUTTON_PIN 13
+
+
+#define NUM_LEDS 1
+#define DATA_PIN 5
+#define CLOCK_PIN 6
+CRGB leds[NUM_LEDS];
+
 
 void setup() {
   Serial.begin(9600);
@@ -13,6 +21,8 @@ void setup() {
   pinMode(CAP_OUT_PIN_2, INPUT_PULLDOWN);
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(BUTTON_PIN, INPUT_PULLUP);
+
+  FastLED.addLeds<P9813, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);  // BGR ordering is typical
 
   digitalWrite(CAP_POWER_PIN_1, HIGH);
   digitalWrite(CAP_POWER_PIN_2, HIGH);
@@ -34,8 +44,20 @@ void loop() {
     digitalWrite(LED_BUILTIN, LOW);
   }
 
-  Serial.print(digitalRead(CAP_OUT_PIN_1));
+  byte cap1 = digitalRead(CAP_OUT_PIN_1);
+  byte cap2 = digitalRead(CAP_OUT_PIN_2);
+
+  Serial.print(cap1);
   Serial.print(" ");
-  Serial.println(digitalRead(CAP_OUT_PIN_2));
+  Serial.println(cap2);
+
+  if (cap1 || cap2) {
+    leds[0] = CRGB::Green;
+  } else {
+    leds[0] = CRGB::Black;
+  }
+
+  FastLED.show();
+  
   delay(50);
 }
