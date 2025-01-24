@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 134.0, 100.0, 877.0, 983.0 ],
+		"rect" : [ 134.0, 100.0, 1118.0, 983.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -1179,8 +1179,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 28.5, 128.0, 170.0, 22.0 ],
-					"text" : "open bass-stem.wav, 1, loop 1"
+					"patching_rect" : [ 28.5, 128.0, 175.0, 22.0 ],
+					"text" : "open guitar-stem.wav, 1, loop 1"
 				}
 
 			}
@@ -1586,8 +1586,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 17.0, 100.869561910629272, 174.0, 22.0 ],
-					"text" : "open synth-stem.wav, 1, loop 1"
+					"patching_rect" : [ 17.0, 100.869561910629272, 170.0, 22.0 ],
+					"text" : "open bass-stem.wav, 1, loop 1"
 				}
 
 			}

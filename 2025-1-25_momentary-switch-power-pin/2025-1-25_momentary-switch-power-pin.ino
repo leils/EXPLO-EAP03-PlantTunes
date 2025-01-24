@@ -51,7 +51,11 @@ void loop() {
   Serial.print(" ");
   Serial.println(cap2);
 
-  if (cap1 || cap2) {
+  if (cap1 && !cap2) {
+    leds[0] = CRGB::Yellow;
+  } else if (!cap1 && cap2) {
+    leds[0] = CRGB::Blue;
+  } else if (cap1 && cap2) {
     leds[0] = CRGB::Green;
   } else {
     leds[0] = CRGB::Black;
