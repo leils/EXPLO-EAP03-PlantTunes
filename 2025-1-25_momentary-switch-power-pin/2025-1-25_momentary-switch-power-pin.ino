@@ -4,7 +4,7 @@
 #define CAP_OUT_PIN_1 11
 #define CAP_POWER_PIN_2 8
 #define CAP_OUT_PIN_2 9
-#define BUTTON_PIN 13
+#define BUTTON_PIN 12
 
 
 #define NUM_LEDS 1
