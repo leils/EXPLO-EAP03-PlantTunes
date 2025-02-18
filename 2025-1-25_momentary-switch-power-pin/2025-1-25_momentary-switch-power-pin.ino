@@ -1,4 +1,4 @@
-#include <FastLED.h> 
+#include <Adafruit_NeoPixel.h>
 
 #define CAP_POWER_PIN_1 10
 #define CAP_OUT_PIN_1 11
@@ -7,11 +7,9 @@
 #define BUTTON_PIN 12
 
 
-#define NUM_LEDS 1
-#define DATA_PIN 5
-#define CLOCK_PIN 6
-CRGB leds[NUM_LEDS];
-
+#define PIXEL_PIN 6 
+#define NUMPIXELS 30 
+Adafruit_NeoPixel pixels(NUMPIXELS, PIXEL_PIN, NEO_RGB + NEO_KHZ800);
 
 void setup() {
   Serial.begin(9600);
@@ -22,7 +20,7 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
-  FastLED.addLeds<P9813, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);  // BGR ordering is typical
+  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
 
   digitalWrite(CAP_POWER_PIN_1, HIGH);
   digitalWrite(CAP_POWER_PIN_2, HIGH);
@@ -52,16 +50,23 @@ void loop() {
   Serial.println(cap2);
 
   if (cap1 && !cap2) {
-    leds[0] = CRGB::Yellow;
+    pixels.clear();
+    for(int i=NUMPIXELS-1; i>17; i--) {
+      pixels.setPixelColor(i, pixels.Color(100,100,0));
+    }
   } else if (!cap1 && cap2) {
-    leds[0] = CRGB::Blue;
+    pixels.clear();
+    for (int i=0; i<12; i++) {
+      pixels.setPixelColor(i, pixels.Color(100,100,0));
+    }
   } else if (cap1 && cap2) {
-    leds[0] = CRGB::Green;
-  } else {
-    leds[0] = CRGB::Black;
-  }
+    pixels.fill(pixels.Color(100,100,100));
 
-  FastLED.show();
+   
+  } else {
+    pixels.clear(); // Set all pixel colors to 'off'
+  }
+  pixels.show();
   
   delay(50);
 }
