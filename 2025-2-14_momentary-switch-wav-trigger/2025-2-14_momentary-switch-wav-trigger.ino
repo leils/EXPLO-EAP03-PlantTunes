@@ -2,14 +2,17 @@
 #include <wavTrigger.h>
 
 wavTrigger wTrig;
+
+//Following is added to poll version to determine connection
 char gWTrigVersion[VERSION_STRING_LEN];
+int gNumTracks;  // Number of tracks on SD card
+bool wTrigConnected = false;
 
 #define CAP_POWER_PIN_1 10
 #define CAP_OUT_PIN_1 11
 #define CAP_POWER_PIN_2 8
 #define CAP_OUT_PIN_2 9
 #define BUTTON_PIN 12
-
 
 #define PIXEL_PIN 6
 #define NUMPIXELS 30
@@ -21,6 +24,8 @@ byte lastCap2 = 0;
 
 void setup() {
   Serial.begin(9600);
+
+  delay(2000);
 
   pinMode(CAP_POWER_PIN_1, OUTPUT);
   pinMode(CAP_OUT_PIN_1, INPUT_PULLDOWN);
@@ -35,50 +40,31 @@ void setup() {
   digitalWrite(CAP_POWER_PIN_2, HIGH);
   digitalWrite(LED_BUILTIN, LOW);
 
-  while (!wTrig.getVersion(gWTrigVersion, VERSION_STRING_LEN)) {  //Use version get to indicate connectivity
-    Serial.println("Attempting to connect to WTrig ...");
-    delay(10);
-    wTrig.start();
-    delay(10);
-  }
-
-  Serial.println("WTrig successfully connected");
+  wTrig.start();
   delay(10);
 
   loadAndPlayTracksMuted();
 }
 
-void testAndConnectWTrig() {
-  while (!wTrig.getVersion(gWTrigVersion, VERSION_STRING_LEN)) {  //Use version get to indicate connectivity
-    Serial.println("Attempting to connect to WTrig ...");
-    delay(10);
-    wTrig.start();
-    delay(10);
-  }
-
-  Serial.println("WTrig successfully connected");
-  delay(10);
-}
-
 void loadAndPlayTracksMuted() {
   // Create a clean slate with no playing tracks
   wTrig.stopAllTracks();
-  delay(10);
+  delay(20);
   wTrig.samplerateOffset(0);
-  delay(10);
+  delay(20);
   // Mark all tracks for looping, mute, and load them
   for (int i = 0; i < 4; i++) {
     wTrig.trackLoop(i, true);
-    delay(10);  // The Wav Trigger can't handle consecutive commands via serial, needs some processing time
+    delay(20);  // The Wav Trigger can't handle consecutive commands via serial, needs some processing time
     wTrig.trackGain(i, -70);
-    delay(10);
+    delay(20);
     wTrig.trackLoad(i);
-    delay(10);
+    delay(20);
   }
 
   wTrig.resumeAllInSync();  //Play all tracks
+  delay(20);
 }
-
 
 void loop() {
   byte buttonState = digitalRead(BUTTON_PIN);
@@ -91,6 +77,8 @@ void loop() {
     wTrig.stopAllTracks();
 
     delay(1000);
+    wTrig.start();
+    delay(10);
     digitalWrite(CAP_POWER_PIN_1, HIGH);
     digitalWrite(CAP_POWER_PIN_2, HIGH);
     digitalWrite(LED_BUILTIN, LOW);
@@ -100,9 +88,6 @@ void loop() {
   byte cap1 = digitalRead(CAP_OUT_PIN_1);
   byte cap2 = digitalRead(CAP_OUT_PIN_2);
 
-  Serial.print(cap1);
-  Serial.print(" ");
-  Serial.println(cap2);
 
   // ---------- Catch rising/falling edges on cap sensors for sound volume
   // On a rising edge, raises track volume to 0 gain (normal volume)
