@@ -10,9 +10,21 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 34.0, 100.0, 1660.0, 983.0 ],
+		"rect" : [ 34.0, 100.0, 1277.0, 983.0 ],
 		"gridsize" : [ 15.0, 15.0 ],
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-29",
+					"linecount" : 8,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 972.0, 96.0, 150.0, 127.0 ],
+					"text" : "next steps: \n- play with scaled values input, use smaller range\n- consider multi-person number ranges (cutoffs?) Can I get the plant to react differently if there are 1 vs 2 people touching it? \n"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-39",
 					"maxclass" : "newobj",
@@ -587,7 +599,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 213.888885319232941, 174.074071168899536, 100.0, 22.0 ],
-					"text" : "scale 30 140 1. 0"
+					"text" : "scale 80 140 1. 0"
 				}
 
 			}
@@ -951,7 +963,7 @@
 
 							}
  ],
-						"originid" : "pat-40"
+						"originid" : "pat-6"
 					}
 ,
 					"patching_rect" : [ 37.0, 119.0, 189.256187856197357, 22.0 ],
@@ -1416,7 +1428,7 @@
 
 			}
  ],
-		"originid" : "pat-38",
+		"originid" : "pat-4",
 		"parameters" : 		{
 			"obj-23" : [ "live.gain~[1]", "live.gain~", 0 ],
 			"obj-3" : [ "live.gain~", "live.gain~", 0 ],
