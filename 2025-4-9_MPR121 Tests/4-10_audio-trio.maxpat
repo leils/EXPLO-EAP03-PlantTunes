@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 34.0, 100.0, 1277.0, 983.0 ],
+		"rect" : [ 34.0, 124.0, 1277.0, 959.0 ],
 		"gridsize" : [ 15.0, 15.0 ],
 		"boxes" : [ 			{
 				"box" : 				{
@@ -19,7 +19,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 972.0, 96.0, 150.0, 127.0 ],
+					"patching_rect" : [ 972.0, 96.0, 153.0, 127.0 ],
 					"text" : "next steps: \n- play with scaled values input, use smaller range\n- consider multi-person number ranges (cutoffs?) Can I get the plant to react differently if there are 1 vs 2 people touching it? \n"
 				}
 
@@ -599,7 +599,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 213.888885319232941, 174.074071168899536, 100.0, 22.0 ],
-					"text" : "scale 80 140 1. 0"
+					"text" : "scale 75 105 1. 0"
 				}
 
 			}
@@ -690,7 +690,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 637.0, 218.0, 1000.0, 780.0 ],
+						"rect" : [ 637.0, 218.0, 617.0, 780.0 ],
 						"gridsize" : [ 15.0, 15.0 ],
 						"boxes" : [ 							{
 								"box" : 								{
@@ -927,6 +927,15 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-10", 0 ],
+									"order" : 0,
+									"source" : [ "obj-5", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-38", 0 ],
+									"order" : 1,
 									"source" : [ "obj-5", 0 ]
 								}
 
@@ -963,7 +972,7 @@
 
 							}
  ],
-						"originid" : "pat-6"
+						"originid" : "pat-8"
 					}
 ,
 					"patching_rect" : [ 37.0, 119.0, 189.256187856197357, 22.0 ],
@@ -1428,7 +1437,7 @@
 
 			}
  ],
-		"originid" : "pat-4",
+		"originid" : "pat-6",
 		"parameters" : 		{
 			"obj-23" : [ "live.gain~[1]", "live.gain~", 0 ],
 			"obj-3" : [ "live.gain~", "live.gain~", 0 ],
@@ -1453,10 +1462,10 @@
 				"boxes" : [ "obj-83", "obj-80", "obj-1", "obj-8", "obj-3" ]
 			}
 , 			{
-				"boxes" : [ "obj-7", "obj-19", "obj-15", "obj-27", "obj-16", "obj-26", "obj-14", "obj-52", "obj-4", "obj-51", "obj-50", "obj-32", "obj-72", "obj-22", "obj-74" ]
+				"boxes" : [ "obj-33", "obj-23", "obj-21", "obj-10", "obj-9", "obj-11", "obj-13", "obj-17", "obj-24", "obj-18" ]
 			}
 , 			{
-				"boxes" : [ "obj-33", "obj-23", "obj-21", "obj-10", "obj-9", "obj-11", "obj-13", "obj-17", "obj-24", "obj-18" ]
+				"boxes" : [ "obj-7", "obj-19", "obj-15", "obj-27", "obj-16", "obj-26", "obj-14", "obj-52", "obj-4", "obj-51", "obj-50", "obj-32", "obj-72", "obj-22", "obj-74" ]
 			}
 , 			{
 				"boxes" : [ "obj-28", "obj-5", "obj-69", "obj-31", "obj-38", "obj-34" ]
