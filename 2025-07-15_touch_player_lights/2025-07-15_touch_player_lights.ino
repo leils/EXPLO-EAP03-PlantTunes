@@ -68,7 +68,7 @@ void loop() {
   
   // -------------- Handle filtered data as control
   if (cap.filteredData(0) < 100) {
-    myDFPlayer.volume(20);  
+    myDFPlayer.volume(30);  
     pixels.fill(pixels.Color(100,100,30));
     pixels.show();
   } else {
