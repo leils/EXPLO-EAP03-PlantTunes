@@ -3,6 +3,7 @@
 #include "Adafruit_MPR121.h"
 #include <wavTrigger.h>
 
+#define delayMs 25 
 /* ------------------ WavTrigger Variables ---------------------- */
 /*
     Note: On the Uno R4, the WavTrigger communicates over Serial1.
@@ -19,12 +20,18 @@ wavTrigger wTrig;
 
 Adafruit_MPR121 cap = Adafruit_MPR121();
 
+#define safetyZone 20
 int presenceThreshold = 300; // Default value, should be updated based on calibration
 int lowestThreshold = 300;
-int calibrationData[100];
-#define wiggleRoom 10;
 
-int lastRead;
+const int numReadings = 16;
+
+int readings[numReadings];  // the readings from the input
+int readIndex = 0;          // the index of the current reading
+int readTotal = 0;              // the running total
+int readAverage = 0;            // the average
+
+int lastReadAverage = 0;
 
 /* ------------------ LEDs Variables ---------------------- */
 #define LEDS_PIN A5
@@ -72,7 +79,9 @@ void setup()
 
     Serial.println("MPR121 found!");
 
-    lastRead = cap.filteredData(0);
+    for (int thisReading = 0; thisReading < numReadings; thisReading++) {
+        readings[thisReading] = 0;
+    }
 
     /* ------------------ LED Setup ---------------------- */
 
@@ -81,67 +90,84 @@ void setup()
 
     /* ------------------ Calibration Setup ---------------------- */
 
-    calibrate();
+    calibrateAverage();
 }
 
-void calibrate() {
-    Serial.println("------------ Calibration!");
+void calibrateAverage() {
+    Serial.println("------------ Calibration, do not touch the sensor!");
     pixels.fill(pixels.Color(255, 0, 0));
     pixels.show();
-    delay(1000); // Take the baseline of the last 1 second as our presenceThreshold
-    presenceThreshold = cap.baselineData(0);    // This is probably too high ... will lead to flaky data
+
+    delay(2000); // Take the baseline of the last 2 seconds as our presenceThreshold
+    presenceThreshold = cap.baselineData(0) - safetyZone;    // This is probably too high ... will lead to flaky data
     lowestThreshold = presenceThreshold;
 
+    // Fill the read buffer with real readings
+    for (int i=0; i < numReadings; i++) {
+        takeCapReading();
+        delay(delayMs);
+    }
 
     Serial.println("Lows Calibration, please touch the sensor.");
     pixels.fill(pixels.Color(0, 255, 0));
     pixels.show();
 
-    // take the lowest of the 100 samples 
-    for (int i=0; i < 100; i++) {
-        int latestRead = cap.filteredData(0);
-        if (latestRead < lowestThreshold) {
-            lowestThreshold = latestRead;
+    for (int i=0; i < 300; i++) {
+        takeCapReading();
+        if (readAverage < lowestThreshold) {    // Find the lowest average reading over this time 
+            lowestThreshold = readAverage;
         }
-        delay(50);
+        delay(delayMs);
     }
-
-    Serial.print("Presence Threshold: ");
-    Serial.print(presenceThreshold);
-    Serial.print(" lowestThreshold: ");
-    Serial.println(lowestThreshold);
 
     pixels.clear(); // Set all pixel colors to 'off'
     pixels.show();
+
+    lastReadAverage = readAverage;
+    // Serial.print("presenceThershold: ");
+    // Serial.print(presenceThreshold);
+    // Serial.print(" lowestThreshold: ");
+    // Serial.println(lowestThreshold);
+
 }
 
 void loop()
 {
-    int currentRead = cap.filteredData(0);
-    // Serial.print("Baseline: ");
-    // Serial.print(cap.baselineData(0));
-    // Serial.print("Filtered: ");
-    Serial.println(currentRead);
+    takeCapReading();
+    Serial.println(readAverage);
 
-    if (currentRead < (presenceThreshold - 10)) {
-        int mappedVol = int(map(currentRead, lowestThreshold, presenceThreshold, MAXVOLUME, MINVOLUME));
+    if (readAverage < (presenceThreshold)) {
+        int mappedVol = int(map(readAverage, lowestThreshold, presenceThreshold, MAXVOLUME, MINVOLUME));
         wTrig.masterGain(mappedVol);
 
         pixels.clear();
-        int mappedLightIndex = int(map(currentRead, lowestThreshold, presenceThreshold, 6, 0));
+        int mappedLightIndex = int(map(readAverage, lowestThreshold, presenceThreshold, 6, 0));
         for (int i=0; i <= mappedLightIndex; i++) {
             pixels.setPixelColor(i, pixels.Color(100, 100, 30));
         }
 
         pixels.show();
     }
-    else if (lastRead < presenceThreshold && currentRead > presenceThreshold)
+    else if ((readAverage > presenceThreshold) && (lastReadAverage < presenceThreshold))
     { // Rising edge, touch lost
         wTrig.masterGain(-70);
         pixels.clear();
         pixels.show();
     }
 
-    lastRead = currentRead;
-    delay(100);
+    lastReadAverage = readAverage;
+    delay(delayMs);
+}
+
+void takeCapReading() {
+    readTotal = readTotal - readings[readIndex];
+    readings[readIndex] =  cap.filteredData(0); // read from the sensor:
+    readTotal = readTotal + readings[readIndex]; // add the reading to the total:
+    readIndex = readIndex + 1; // advance to the next position in the array:
+
+    if (readIndex >= numReadings) { // if we're at the end of the array...
+        readIndex = 0; // ...wrap around to the beginning:
+    }
+
+    readAverage = readTotal / numReadings; // calculate the average:
 }
