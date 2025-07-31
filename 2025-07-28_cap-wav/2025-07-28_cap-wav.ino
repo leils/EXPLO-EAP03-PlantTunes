@@ -4,6 +4,7 @@
 #include <wavTrigger.h>
 
 #define delayMs 25 
+bool triggerOn = false;
 /* ------------------ WavTrigger Variables ---------------------- */
 /*
     Note: On the Uno R4, the WavTrigger communicates over Serial1.
@@ -147,15 +148,17 @@ void loop()
         }
 
         pixels.show();
+        triggerOn = true;
     }
-    else if ((readAverage > presenceThreshold) && (lastReadAverage < presenceThreshold))
+    else if ((readAverage > presenceThreshold) && (triggerOn)) // only set volume if the trigger is already on
     { // Rising edge, touch lost
         wTrig.masterGain(-70);
         pixels.clear();
         pixels.show();
+
+        triggerOn = false;
     }
 
-    lastReadAverage = readAverage;
     delay(delayMs);
 }
 
