@@ -19,7 +19,10 @@ wavTrigger wTrig;
 
 Adafruit_MPR121 cap = Adafruit_MPR121();
 
-#define THRESHOLD 200 
+int presenceThreshold = 300; // Default value, should be updated based on calibration
+int lowestThreshold = 300;
+int calibrationData[100];
+#define wiggleRoom 10;
 
 int lastRead;
 
@@ -52,7 +55,6 @@ void setup()
     wTrig.trackLoop(1, true);
     delay(20);
 
-    //   wTrig.trackGain(1, -70); // mute the track
     wTrig.masterGain(-70);
     delay(20);
     wTrig.trackPlaySolo(1);
@@ -72,40 +74,68 @@ void setup()
 
     lastRead = cap.filteredData(0);
 
-    calibrate();
-
     /* ------------------ LED Setup ---------------------- */
 
     pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
     pixels.clear(); // Set all pixel colors to 'off'
 
+    /* ------------------ Calibration Setup ---------------------- */
+
+    calibrate();
 }
 
 void calibrate() {
-    // TODO: Create process for calibration 
+    Serial.println("------------ Calibration!");
+    pixels.fill(pixels.Color(255, 0, 0));
+    pixels.show();
+    delay(1000); // Take the baseline of the last 1 second as our presenceThreshold
+    presenceThreshold = cap.baselineData(0);    // This is probably too high ... will lead to flaky data
+    lowestThreshold = presenceThreshold;
+
+
+    Serial.println("Lows Calibration, please touch the sensor.");
+    pixels.fill(pixels.Color(0, 255, 0));
+    pixels.show();
+
+    // take the lowest of the 100 samples 
+    for (int i=0; i < 100; i++) {
+        int latestRead = cap.filteredData(0);
+        if (latestRead < lowestThreshold) {
+            lowestThreshold = latestRead;
+        }
+        delay(50);
+    }
+
+    Serial.print("Presence Threshold: ");
+    Serial.print(presenceThreshold);
+    Serial.print(" lowestThreshold: ");
+    Serial.println(lowestThreshold);
+
+    pixels.clear(); // Set all pixel colors to 'off'
+    pixels.show();
 }
 
 void loop()
 {
     int currentRead = cap.filteredData(0);
-    Serial.print("Baseline: ");
-    Serial.print(cap.baselineData(0));
-    Serial.print("Filtered: ");
+    // Serial.print("Baseline: ");
+    // Serial.print(cap.baselineData(0));
+    // Serial.print("Filtered: ");
     Serial.println(currentRead);
 
-    if (currentRead < THRESHOLD) {
-        int mappedVol = int(map(currentRead, 30, 200, MAXVOLUME, MINVOLUME));
+    if (currentRead < (presenceThreshold - 10)) {
+        int mappedVol = int(map(currentRead, lowestThreshold, presenceThreshold, MAXVOLUME, MINVOLUME));
         wTrig.masterGain(mappedVol);
 
         pixels.clear();
-        int mappedLightIndex = int(map(currentRead, 30, 200, 6, 0));
+        int mappedLightIndex = int(map(currentRead, lowestThreshold, presenceThreshold, 6, 0));
         for (int i=0; i <= mappedLightIndex; i++) {
             pixels.setPixelColor(i, pixels.Color(100, 100, 30));
         }
 
         pixels.show();
     }
-    else if (lastRead < THRESHOLD && currentRead > THRESHOLD)
+    else if (lastRead < presenceThreshold && currentRead > presenceThreshold)
     { // Rising edge, touch lost
         wTrig.masterGain(-70);
         pixels.clear();
@@ -113,5 +143,5 @@ void loop()
     }
 
     lastRead = currentRead;
-    delay(50);
+    delay(100);
 }
