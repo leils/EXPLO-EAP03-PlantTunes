@@ -21,7 +21,7 @@ wavTrigger wTrig;
 
 Adafruit_MPR121 cap = Adafruit_MPR121();
 
-#define safetyZone 20
+#define safetyZone 5 
 int presenceThreshold = 300; // Default value, should be updated based on calibration
 int lowestThreshold = 300;
 
